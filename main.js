@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const session = require('express-session');
+const flash = require('connect-flash');
 
 const app = express();
 
@@ -27,20 +28,19 @@ app.use(session({
   resave: false,
   saveUninitialized: true,
 }));
+app.use(flash());
 
 app.use((req, res, next) => {
-  console.log(`${req.method} ${req.url}`);
-  res.locals.message = req.session.message;
-    delete req.session.message;
+    res.locals.message = req.flash('success_msg');
     next();
-    });
+});
 
-    app.set('view engine', 'ejs');
+app.set('view engine', 'ejs');
 
+app.use(express.static('public'));
 
 //routes
-
-app.use('/api', require('./routes/routes'));
+app.use('', require('./routes/routes'));
 app.listen(port, () => {
   console.log(`Server is running on port  http://localhost:${port}`);
 });
